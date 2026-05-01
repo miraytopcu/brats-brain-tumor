@@ -1,0 +1,5 @@
+Subset,Volumes (Patients),Volume %,Status
+Train,265,71.82,Ready for Training
+Validation,30,8.13,Ready for Validation
+Test,74,20.05,Ready for Evaluation
+Total,369,100.0,Complete Dataset
