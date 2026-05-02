@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import os
 from sklearn.model_selection import train_test_split
+import glob
 
 def split_data(patient_ids, test_size=0.2, val_size=0.1):
     
@@ -60,14 +61,26 @@ def load_patient_volumes(patient_path, patient_id):
     mods = ['flair', 't1', 't1ce', 't2']
     images = []
     
-    for mod in mods:
-        path = os.path.join(patient_path, f"{patient_id}_{mod}.nii")
-        images.append(nib.load(path).get_fdata())
+    try:
+        for mod in mods:
+            pattern = os.path.join(patient_path, f"*{mod}.nii")
+            matching_files = glob.glob(pattern)
+            
+            if not matching_files:
+                return None, None
+            
+            img = nib.load(matching_files[0]).get_fdata()
+            images.append(img)
     
-    # Stack to (240, 240, 155, 4)
-    image_vol = np.stack(images, axis=-1)
+        # Stack to (240, 240, 155, 4)
+        image_vol = np.stack(images, axis=-1)
+        
+        mask_pattern = os.path.join(patient_path, "*seg.nii")
+        mask_matching = glob.glob(mask_pattern)
+        mask_vol = nib.load(mask_matching[0]).get_fdata()
+        
+        return image_vol, mask_vol
     
-    mask_path = os.path.join(patient_path, f"{patient_id}_seg.nii")
-    mask_vol = nib.load(mask_path).get_fdata()
-    
-    return image_vol, mask_vol
+    except Exception as e:
+        print(f"Error: Mistake in {patient_id} folder: {e}")
+        return None, None
