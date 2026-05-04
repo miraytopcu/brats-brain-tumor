@@ -32,7 +32,7 @@ if os.path.exists(checkpoint_path):
     model.load_weights(checkpoint_path)
     
     if MODEL_TYPE == "unet":
-        start_epoch = 28
+        start_epoch = 31
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
