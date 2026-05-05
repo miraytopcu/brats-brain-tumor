@@ -8,7 +8,7 @@ import argparse
 DATA_PATH = "/content/drive/MyDrive/BraTS_Project/data/BraTS2020_TrainingData/MICCAI_BraTS2020_TrainingData"
 REPO_PATH = "/content/drive/MyDrive/BraTS_Project/brats-brain-tumor"
 BATCH_SIZE = 8
-EPOCHS = 50
+EPOCHS = 70
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="unet", help="unet, attention, or resunet")
@@ -32,7 +32,7 @@ if os.path.exists(checkpoint_path):
     model.load_weights(checkpoint_path)
     
     if MODEL_TYPE == "unet":
-        start_epoch = 40
+        start_epoch = 50
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
@@ -44,7 +44,7 @@ os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
 
 callbacks = [
     tf.keras.callbacks.ModelCheckpoint(checkpoint_path, monitor="val_dice_coefficient", mode="max", save_best_only=True, verbose=1),
-    tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True, verbose=1),
+    tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True, verbose=1),
     tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=5, min_lr=1e-7, verbose=1)
 ]
 
