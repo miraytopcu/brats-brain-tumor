@@ -34,8 +34,10 @@ if os.path.exists(checkpoint_path):
     if MODEL_TYPE == "unet":
         start_epoch = 50
 
+initial_lr = 1e-4 if start_epoch == 0 else 2e-5
+
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=initial_lr),
     loss=hybrid_loss,
     metrics=[dice_coefficient, "accuracy"]
 )
@@ -44,8 +46,9 @@ os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
 
 callbacks = [
     tf.keras.callbacks.ModelCheckpoint(checkpoint_path, monitor="val_dice_coefficient", mode="max", save_best_only=True, verbose=1),
-    tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True, verbose=1),
-    tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=5, min_lr=1e-7, verbose=1)
+    tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True, verbose=1),
+    tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=5, min_lr=1e-7, verbose=1),
+    tf.keras.callbacks.CSVLogger(os.path.join(REPO_PATH, "unet_training_log.csv"), append=True)
 ]
 
 history = model.fit(
