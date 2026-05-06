@@ -13,7 +13,7 @@ EPOCHS = 70
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="unet", help="unet, attention, or resunet")
-args = parser.parse_argument_group().parser.parse_args() if hasattr(args, 'model') else parser.parse_args()
+args = parser.parse_args()
 
 MODEL_TYPE = args.model
 
